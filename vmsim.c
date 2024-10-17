@@ -8,7 +8,7 @@ int main(int argc, char argv[]){
     int num_frames = -1;                                 // Integer som lagrar det valda antalet frames
     char *filename = NULL;                               // Sträng som lagrar den valda filen
     int opt;                                             // En integer som håller värdet som getopt() returnerar, getopt() returnerar dem angivna tecknen a:n:f: som ett heltal om den stöter på dem (-a -b -f)
-	//Git test 2
+	//Git test 3
     while ((opt = getopt(argc, argv, "a:n:f:")) != -1) { // Startar en loop som går igenom alla kommandoradsalternativ, när det inte finns fler alternativ returnerar getopt() -1
         switch(opt){                                     // Beroende på vilket alternativ som hittats av getopt()
             case 'a':                                    // Hantera '-a' flaggan
