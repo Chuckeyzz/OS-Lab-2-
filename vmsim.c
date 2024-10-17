@@ -47,5 +47,5 @@ FILE *file = fopen(filename, "r");                  // Vi använder det inmatadd
     }
     fclose(file);    
 
-    return 0;
+    return 0;   
 }
