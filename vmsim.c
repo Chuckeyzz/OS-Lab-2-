@@ -4,8 +4,8 @@
 #include <unistd.h> // För getopt()
 
 int main(int argc, char argv[]){
-    char algorithm = NULL;                              // Sträng för att lagra den valda algoritmen
-    int num_frames = -1;                                 // Integer som lagrar det valda antalet frames
+    char *algorithm = NULL;                              // Sträng för att lagra den valda algoritmen
+    int num_frames = 0;                                 // Integer som lagrar det valda antalet frames
     char *filename = NULL;                               // Sträng som lagrar den valda filen
     int opt;                                             // En integer som håller värdet som getopt() returnerar, getopt() returnerar dem angivna tecknen a:n:f: som ett heltal om den stöter på dem (-a -b -f)
 	//Git test 3
