@@ -3,12 +3,12 @@
 #include <string.h>
 #include <unistd.h> // För getopt()
 
-int main(int argc, char *argv[]){
+int main(int argc, char argv[]){
     char *algorithm = NULL;                              // Sträng för att lagra den valda algoritmen
     int num_frames = 0;                                 // Integer som lagrar det valda antalet frames
     char *filename = NULL;                               // Sträng som lagrar den valda filen
     int opt;                                             // En integer som håller värdet som getopt() returnerar, getopt() returnerar dem angivna tecknen a:n:f: som ett heltal om den stöter på dem (-a -b -f)
-	//Git test
+	//Git test 3
     while ((opt = getopt(argc, argv, "a:n:f:")) != -1) { // Startar en loop som går igenom alla kommandoradsalternativ, när det inte finns fler alternativ returnerar getopt() -1
         switch(opt){                                     // Beroende på vilket alternativ som hittats av getopt()
             case 'a':                                    // Hantera '-a' flaggan
@@ -25,14 +25,13 @@ int main(int argc, char *argv[]){
             exit(EXIT_FAILURE);
         }
     }
-
-    if (algorithm == NULL || num_frames <= 0 || filename == NULL) {          //Vi kontrollerar så att alla argument angivits
+if (algorithm == NULL || num_frames <= 0 || filename == NULL) {          //Vi kontrollerar så att alla argument angivits
         fprintf(stderr, "Alla argument (-a, -n, -f) måste anges och antal ramar måste vara större än 0.\n");
         exit(EXIT_FAILURE);
     }
-    //printf(algorithm);
-    //TEST
-    FILE *file = fopen(filename, "r");                  // Vi använder det inmatadde filnamnet för att öppna filen och spara den i "file"
+    printf(algorithm);
+
+FILE *file = fopen(filename, "r");                  // Vi använder det inmatadde filnamnet för att öppna filen och spara den i "file"
     if (file == NULL) {                                 // Hanterar fall där filen inte hittades
         perror("Kunde inte öppna filen");
         exit(EXIT_FAILURE);
@@ -46,7 +45,7 @@ int main(int argc, char *argv[]){
 
         printf("Läste adress: 0x%04X\n", address);
     }
-    fclose(file);
-    
-    return 0;
+    fclose(file);    
+
+    return 0;   
 }
