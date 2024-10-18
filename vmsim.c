@@ -3,8 +3,8 @@
 #include <string.h>
 #include <unistd.h> // För getopt()
 #include <time.h>
-#include <bits/getopt_core.h>           //for linux compilation 
-#include "FIFO.c"
+//#include <bits/getopt_core.h>           //for linux compilation 
+//#include "FIFO.c"
 
 int main(int argc, char *argv[]){
 
@@ -50,18 +50,33 @@ int main(int argc, char *argv[]){
     line = (char*) malloc(256 * sizeof (char));                                 //Allokerar en buffer för att hålla dem inlästa addresserna
 
 
-	//fread(line, 1, 1000, file);
+	//fread(line, 1, 1000, file);  
 
-	while (fgets(line, sizeof(line), file)) {           // En whileloop som läser från filen till "line" tills fgets returnerar NULL
-				pageNR[lineCount] = line [2];			//sätter pageNR[lineCount]till char på line 2
-				pageNR[lineCount+1] = line [3];			//sätter pageNR[lineCount + 1] till char på line 3
-				lineCount = lineCount + 2;				//incrementar lagomt
-		
-
-        unsigned int address = (unsigned int)strtol(line, NULL, 16); // Konvertera hexadecimal sträng till ett heltal
+    int pair_exists(char *pageNR, int length, char first_char, char second_char) {
+        for (int i = 0; i < length; i += 2) { // Gå igenom pageNR i steg om 2 eftersom varje par består av två tecken
+            if (pageNR[i] == first_char && pageNR[i + 1] == second_char) {
+                return 1; // Paret hittades, returnera 1
+            }
+        }
+        return 0; // Paret hittades inte, returnera 0
+    }
+    
+	while (fgets(line, sizeof(line), file)) {           
+        char first_char = line[2];     // Tecken på position 2
+        char second_char = line[3];    // Tecken på position 3
+    
+        // Kontrollera om paret redan finns
+        if (!pair_exists(pageNR, lineCount, first_char, second_char)) { //Vi kollar så att teckenparet inte redan finns i pangeNR
+            pageNR[lineCount] = first_char;    // Lägg till det första tecknet i pageNR
+            pageNR[lineCount + 1] = second_char; // Lägg till det andra tecknet i pageNR
+            lineCount += 2;                   // Öka lineCount med 2 eftersom vi lagt till ett par
+        }
+    
+        // Konvertera hexadecimal sträng till ett heltal
+        unsigned int address = (unsigned int)strtol(line, NULL, 16);
         printf("Läste adress: 0x%04X\n", address);
     }
-
+    
 	/*for(int i = 0; i < (strlen(line)/6); i++){					//for-loop för att kolla vilket pagenummer alla rader tillhör
 		if (i == 0){
 			pageNR[i] = line [(i+2)*i];
@@ -77,12 +92,12 @@ int main(int argc, char *argv[]){
 	}*/
 
 	
-		printf("\n%s",pageNR);
+    printf("\n%s",pageNR);
 
 
-  fclose(file);    
-	free(line);
-	free(pageNR);
+    fclose(file);    
+    free(line);
+    free(pageNR);
 
 
     return 0;
