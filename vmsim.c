@@ -3,17 +3,20 @@
 #include <string.h>
 #include <unistd.h> // För getopt()
 #include <time.h>
-#include <bits/getopt_core.h>
+#include <bits/getopt_core.h>           //for linux compilation 
 #include "FIFO.c"
 
 int main(int argc, char *argv[]){
+
     char *algorithm = NULL;                              // Sträng för att lagra den valda algoritmen
     int num_frames = 0;                                 // Integer som lagrar det valda antalet frames
     char *filename = NULL;                               // Sträng som lagrar den valda filen
     int opt;                                             // En integer som håller värdet som getopt() returnerar, getopt() returnerar dem angivna tecknen a:n:f: som ett heltal om den stöter på dem (-a -b -f)
+
 	char *line;
 	char *pageNR = (char*) malloc(256 * sizeof(char));
 	int lineCount = 0;
+
 
     while ((opt = getopt(argc, argv, "a:n:f:")) != -1) { // Startar en loop som går igenom alla kommandoradsalternativ, när det inte finns fler alternativ returnerar getopt() -1
         switch(opt){                                     // Beroende på vilket alternativ som hittats av getopt()
@@ -38,12 +41,12 @@ int main(int argc, char *argv[]){
     }
     printf("%s\n",algorithm);
 
+
 	FILE *file = fopen(filename, "r");                  // Vi använder det inmatade filnamnet för att öppna filen och spara den i "file"
     if (file == NULL) {                                 // Hanterar fall där filen inte hittades
         perror("Kunde inte öppna filen");
         exit(EXIT_FAILURE);
     }
-
     line = (char*) malloc(256 * sizeof (char));                                 //Allokerar en buffer för att hålla dem inlästa addresserna
 
 
@@ -77,9 +80,10 @@ int main(int argc, char *argv[]){
 		printf("\n%s",pageNR);
 
 
-    fclose(file);    
+  fclose(file);    
 	free(line);
 	free(pageNR);
+
 
     return 0;
 }
