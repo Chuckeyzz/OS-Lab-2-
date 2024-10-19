@@ -91,8 +91,9 @@ int main(int argc, char *argv[]){
 		}
 	}*/
 
-	
-    printf("\n%s",pageNR);
+	for(int i = 0; i < strlen(pageNR); i+=2){       
+        printf("\n%c%c",pageNR[i], pageNR[i+1]);
+    }
 
 
     fclose(file);    
