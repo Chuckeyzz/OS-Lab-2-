@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
         switch (opt) {                                          // Beroende på vilket alternativ som hittats av getopt()  
             case 'a':
                 algorithm = optarg;                             //optarg pekar på argumentet efter det hittade teckner, i detta fall det som kommer efter -a
+
                 break;
             case 'n':
                 num_frames = atoi(optarg);                       // Konvertera argumentet efter -n till en integer och spara i num_frames
@@ -56,7 +57,6 @@ int main(int argc, char *argv[]) {
     }
 
     line = (char *) malloc(BUFFER * sizeof(char));  // Allocate memory for reading lines from file
-
     // Read the file and process each address one by one
     while (fgets(line, BUFFER, file)) {                 // En whileloop som läser från filen till "line" tills fgets returnerar NULL
        
@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
 	printf("Number of frames used: %d\n", num_frames);
     printf("Total page faults: %d\n", pageFaults);
     printf("Total page hits: %d\n", pageHits);
+
 
     // Clean up and close
     fclose(file);
