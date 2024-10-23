@@ -15,6 +15,7 @@ int main(int argc, char *argv[]){
 
 	char *line;
 	char *pageNR = (char*) malloc(256 * sizeof(char));
+    char *pageArray = (char*) malloc(256 * sizeof(char));
 	int lineCount = 0;
 
 
@@ -47,11 +48,9 @@ int main(int argc, char *argv[]){
         perror("Kunde inte öppna filen");
         exit(EXIT_FAILURE);
     }
-    line = (char*) malloc(256 * sizeof (char));                                 //Allokerar en buffer för att hålla dem inlästa addresserna
+    line = (char*) malloc(256 * sizeof (char));                                 //Allokerar en buffer för att hålla dem inlästa addresserna  
 
-
-	//fread(line, 1, 1000, file);  
-
+    //Funktion för att kolla om en page i pageNR redan existerar
     int pair_exists(char *pageNR, int length, char first_char, char second_char) {
         for (int i = 0; i < length; i += 2) { // Gå igenom pageNR i steg om 2 eftersom varje par består av två tecken
             if (pageNR[i] == first_char && pageNR[i + 1] == second_char) {
@@ -76,20 +75,6 @@ int main(int argc, char *argv[]){
         unsigned int address = (unsigned int)strtol(line, NULL, 16);
         printf("Läste adress: 0x%04X\n", address);
     }
-    
-	/*for(int i = 0; i < (strlen(line)/6); i++){					//for-loop för att kolla vilket pagenummer alla rader tillhör
-		if (i == 0){
-			pageNR[i] = line [(i+2)*i];
-			pageNR[i+1] = line [(i+3)*i];
-			printf("Hello");
-		}
-		for (int j = 0; j < strlen(pageNR); j++){
-			if(line [(i+2)*i] != pageNR[j] && line [(i+3)*i] != pageNR[j+1]){
-				pageNR[i] = line [(i+2)*i];
-				pageNR[i+1] = line [(i+3)*i];
-			}
-		}
-	}*/
 
 	for(int i = 0; i < strlen(pageNR); i+=2){       
         printf("\n%c%c",pageNR[i], pageNR[i+1]);
