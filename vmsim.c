@@ -8,31 +8,31 @@
 #define MAXFRAMES 255
 
 int main(int argc, char *argv[]) {
-    char *algorithm = NULL;     // To store the selected algorithm
-    int num_frames = 0;         // To store the selected number of frames
-    char *filename = NULL;      // To store the selected file
-    int opt;                    // To hold the value returned by getopt()
-    int pageHits = 0;           // Track page hits
+    char *algorithm = NULL;     
+    int num_frames = 0;         
+    char *filename = NULL;      
+    int opt;                    
+    int pageHits = 0;           
 	char *algUsed;
     char *line;
     unsigned int *binPageNR = malloc(BUFFER * sizeof(unsigned int));  // Allocate memory for page numbers
-    int lineCount = 0;  // To count the number of pages
-    int pageFaults = 0; // Total page fault counter
+    int lineCount = 0;  
+    int pageFaults = 0; 
 
-    // Parse command-line arguments
-    while ((opt = getopt(argc, argv, "a:n:f:")) != -1) {
-        switch (opt) {
+
+    while ((opt = getopt(argc, argv, "a:n:f:")) != -1) {        // Startar en loop som går igenom alla kommandoradsalternativ, när det inte finns fler alternativ returnerar getopt() -1
+        switch (opt) {                                          // Beroende på vilket alternativ som hittats av getopt()  
             case 'a':
-                algorithm = optarg;
+                algorithm = optarg;                             //optarg pekar på argumentet efter det hittade teckner, i detta fall det som kommer efter -a
                 break;
             case 'n':
-                num_frames = atoi(optarg);
+                num_frames = atoi(optarg);                       // Konvertera argumentet efter -n till en integer och spara i num_frames
                 break;
             case 'f':
                 filename = optarg;
                 break;
             default:
-                fprintf(stderr, "Usage: %s -a <fifo|optimal|lru> -n <frames> -f <file>\n", argv[0]);
+                fprintf(stderr, "Usage: %s -a <fifo|optimal|lru> -n <frames> -f <file>\n", argv[0]);    // Om ett ogiltigt alternativ upptäcks, skriv ut användningsmeddelande och avsluta programmet med fel
                 exit(EXIT_FAILURE);
         }
     }
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 	}
 
     if (algorithm == NULL || num_frames <= 0 || filename == NULL) {
-        fprintf(stderr, "All arguments (-a, -n, -f) must be provided and number of frames must be greater than 0.\n");
+        fprintf(stderr, "Alla argument (-a, -n, -f) måste anges och antal ramar måste vara större än 0.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -58,8 +58,8 @@ int main(int argc, char *argv[]) {
     line = (char *) malloc(BUFFER * sizeof(char));  // Allocate memory for reading lines from file
 
     // Read the file and process each address one by one
-    while (fgets(line, BUFFER, file)) {
-        // Get the full address (hexadecimal) from the line
+    while (fgets(line, BUFFER, file)) {                 // En whileloop som läser från filen till "line" tills fgets returnerar NULL
+       
         unsigned int address = (unsigned int) strtol(line, NULL, 16);
         printf("Read address: 0x%04X\n", address);
 
