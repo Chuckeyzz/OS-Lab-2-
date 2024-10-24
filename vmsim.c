@@ -3,8 +3,10 @@
 #include <string.h>
 #include <unistd.h> // För getopt()
 #include <time.h>
+#define BUFFER 256
 //#include <bits/getopt_core.h>           //for linux compilation 
-//#include "FIFO.c"
+// Funktionsprototyper (deklarationer) för de funktioner som definieras i FIFO.c
+int pageAlgo(int decimal_value, int address, int *frameArray, int num_frames, char *algo, int *usageOrder);
 
 int main(int argc, char *argv[]){
 
@@ -13,12 +15,13 @@ int main(int argc, char *argv[]){
     char *filename = NULL;                               // Sträng som lagrar den valda filen
     int opt;                                             // En integer som håller värdet som getopt() returnerar, getopt() returnerar dem angivna tecknen a:n:f: som ett heltal om den stöter på dem (-a -b -f)
 
-	char *line;
-	char *pageNR = (char*) malloc(256 * sizeof(char));
-    char *pageArray = (char*) malloc(256 * sizeof(char));
-	int lineCount = 0;
-
-
+    char *line;
+    char *pageNR = (char*) malloc(BUFFER * sizeof(char));
+    int lineCount = 0;
+    int *binPageNR = malloc(BUFFER * sizeof(int));
+    int memAccess = 0;
+    int pageHit = 0;
+    
     while ((opt = getopt(argc, argv, "a:n:f:")) != -1) { // Startar en loop som går igenom alla kommandoradsalternativ, när det inte finns fler alternativ returnerar getopt() -1
         switch(opt){                                     // Beroende på vilket alternativ som hittats av getopt()
             case 'a':                                    // Hantera '-a' flaggan
@@ -35,56 +38,61 @@ int main(int argc, char *argv[]){
             exit(EXIT_FAILURE);
         }
     }
-	
-	if (algorithm == NULL || num_frames <= 0 || filename == NULL) {          //Vi kontrollerar så att alla argument angivits
+
+    int *frameArray = malloc(num_frames * sizeof(int));
+    int *usageOrder = malloc(num_frames * sizeof(int));
+    // Initialisera alla frameArray-värden till något ogiltigt, t.ex. -1
+    for (int i = 0; i < num_frames; i++) {
+        frameArray[i] = -1;  // Använd ett värde som inte förekommer i decimal_value
+        usageOrder[i] = -1;  // Noll betyder att den inte har använts än
+    }
+    
+    if (algorithm == NULL || num_frames <= 0 || filename == NULL) {          //Vi kontrollerar så att alla argument angivits
         fprintf(stderr, "Alla argument (-a, -n, -f) måste anges och antal ramar måste vara större än 0.\n");
         exit(EXIT_FAILURE);
     }
     printf("%s\n",algorithm);
 
 
-	FILE *file = fopen(filename, "r");                  // Vi använder det inmatade filnamnet för att öppna filen och spara den i "file"
+    FILE *file = fopen(filename, "r");                  // Vi använder det inmatade filnamnet för att öppna filen och spara den i "file"
     if (file == NULL) {                                 // Hanterar fall där filen inte hittades
         perror("Kunde inte öppna filen");
         exit(EXIT_FAILURE);
     }
-    line = (char*) malloc(256 * sizeof (char));                                 //Allokerar en buffer för att hålla dem inlästa addresserna  
+    line = (char*) malloc(256 * sizeof (char));                                 //Allokerar en buffer för att hålla dem inlästa addresserna
 
-    //Funktion för att kolla om en page i pageNR redan existerar
-    int pair_exists(char *pageNR, int length, char first_char, char second_char) {
-        for (int i = 0; i < length; i += 2) { // Gå igenom pageNR i steg om 2 eftersom varje par består av två tecken
-            if (pageNR[i] == first_char && pageNR[i + 1] == second_char) {
-                return 1; // Paret hittades, returnera 1
-            }
-        }
-        return 0; // Paret hittades inte, returnera 0
-    }
+    while (fgets(line, sizeof(line), file)) {           
+            char first_char = line[2];     // Tecken på position 2
+            char second_char = line[3];    // Tecken på position 3
     
-	while (fgets(line, sizeof(line), file)) {           
-        char first_char = line[2];     // Tecken på position 2
-        char second_char = line[3];    // Tecken på position 3
+            // Skapa en sträng som innehåller de två tecknen
+            char hex_str[3];          // Behöver plats för två tecken + null-terminator
+            hex_str[0] = first_char;
+            hex_str[1] = second_char;
+            hex_str[2] = '\0';        // Lägg till null-terminator
     
-        // Kontrollera om paret redan finns
-        if (!pair_exists(pageNR, lineCount, first_char, second_char)) { //Vi kollar så att teckenparet inte redan finns i pangeNR
-            pageNR[lineCount] = first_char;    // Lägg till det första tecknet i pageNR
-            pageNR[lineCount + 1] = second_char; // Lägg till det andra tecknet i pageNR
-            lineCount += 2;                   // Öka lineCount med 2 eftersom vi lagt till ett par
-        }
-    
-        // Konvertera hexadecimal sträng till ett heltal
-        unsigned int address = (unsigned int)strtol(line, NULL, 16);
-        printf("Läste adress: 0x%04X\n", address);
+            // Använd strtol för att konvertera från hexadecimal sträng till decimalt tal
+            int decimal_value = (int)strtol(hex_str, NULL, 16);
+            binPageNR[lineCount] = decimal_value;
+            lineCount++;
+            // Konvertera hexadecimal sträng till ett heltal
+            unsigned int address = (unsigned int)strtol(line, NULL, 16);
+            pageHit = pageAlgo(decimal_value, address, frameArray, num_frames, algorithm, usageOrder);
+            memAccess++;
     }
 
-	for(int i = 0; i < strlen(pageNR); i+=2){       
-        printf("\n%c%c",pageNR[i], pageNR[i+1]);
-    }
-
-
+    printf("\nRunning simulation... Done\n\n");
+    printf("Simulation Summary\n\n");
+    printf("Algorithm: %s\n", algorithm);
+    printf("Frames: %d\n", num_frames);
+    printf("Memory accesses: %d\n", memAccess);
+    printf("Page hits: %d\n", pageHit);
+    printf("Page faults: %d\n", memAccess-pageHit);
+    printf("Page replacements: %d\n", (memAccess-pageHit)-num_frames);    
+    
     fclose(file);    
     free(line);
     free(pageNR);
-
-
+    free(binPageNR);
     return 0;
 }
